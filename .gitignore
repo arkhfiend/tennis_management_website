@@ -7,3 +7,12 @@
 
 # Ignore the .venv file in the main folder
 .venv
+
+# Ignore .idea folder
+.idea/
+
+# Ignore .vscode folder
+.vscode/
+
+# Ignore allfiles.txt
+allfiles.txt
