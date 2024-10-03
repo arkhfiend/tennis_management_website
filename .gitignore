@@ -1,0 +1,9 @@
+
+# Ignore log files
+*.log
+
+# Ignore node_modules in the frontend folder
+/frontend/node_modules/
+
+# Ignore the .venv file in the main folder
+.venv
