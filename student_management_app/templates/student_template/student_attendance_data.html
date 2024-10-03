@@ -1,0 +1,64 @@
+{% extends 'student_template/base_template.html' %}
+{% block custom_css %}
+<style>
+   .attendance_div {
+       padding: 10px;
+       padding-top: 20px;
+       padding-bottom: 20px;
+       border: 10px solid white;
+       text-align: center;
+       color: #fff;
+       border-radius: 30px;
+       box-shadow: 1px 1px 1px grey;
+       margin-top: 10px;
+       margin-bottom: 10px;
+   }
+   .attendance_div_present {
+       background: #388e3c;
+   }
+   .attendance_div_absent {
+       background: #f44336;
+   }
+</style>
+{% endblock custom_css %}
+{% block page_title %}
+Attendance Data
+{% endblock page_title %}
+{% block main_content %}
+<section class="content">
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-md-12">
+            <div class="card card-primary">
+               <div class="card-header">
+                  <h3 class="card-title">View Attendance</h3>
+               </div>
+               <div class="card-body">
+                  <div class="row">
+                     {% if attendance_reports %}
+                     {% for report in attendance_reports %}
+                     <div class="col-lg-3 attendance_div {% if report.status %}attendance_div_present{% else %}attendance_div_absent{% endif %}">
+                        <b>Date: {{ report.attendance_id.attendance_date }}</b>
+                        <br>
+                        <b>Status: {% if report.status %}Present{% else %}Absent{% endif %}</b>
+                     </div>
+                     {% endfor %}
+                     <div class="col-lg-12">
+                        <b>Total Sessions Attended: {{ total_sessions_attended }}</b>
+                     </div>
+                     {% if fee_reminder %}
+                     <div class="alert alert-warning">
+                        <b>Fee Reminder: You have completed {{ total_sessions_attended }} sessions. Please make your payment!</b>
+                     </div>
+                     {% endif %}
+                     {% else %}
+                     <div class="alert alert-danger text-center">No Attendance Data Found!</div>
+                     {% endif %}
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</section>
+{% endblock main_content %}

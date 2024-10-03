@@ -1,0 +1,37 @@
+
+/* Wrapping container with overflow */
+.clients-marquee-wrapper {
+    overflow: hidden;
+    padding-top:10px ;
+    padding-bottom: 10px;
+    position: relative;
+    border-top: 4px solid ;
+    border-bottom: 4px solid ;
+    width: 100%; /* Ensure it takes the full width of the viewport */
+  }
+  
+  .clients-marquee {
+    display: flex;
+    gap: 3rem;
+    white-space: nowrap;
+    will-change: transform;
+    transform-style: preserve-3d;
+    animation: marquee 10s linear infinite; /* Adjust duration */
+  }
+  
+  /* Ensure text has padding and appropriate size */
+  .marquee-heading {
+    padding: 2 2rem;
+    font-weight: 800;
+    font-size: 6rem;
+    -webkit-text-stroke-color: #fff;
+  }
+  
+  @keyframes marquee {
+    0% {
+      transform: translate3d(100%, 0, 0);
+    }
+    100% {
+      transform: translate3d(-100%, 0, 0);
+    }
+  }

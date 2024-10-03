@@ -1,0 +1,137 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+View Attendance
+{% endblock page_title %}
+{% block main_content %}
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">View Attendance</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Branch </label>
+                            <select class="form-control" name="branch" id="branch">
+                                {% for branch in branches %}
+                                    <option value="{{ branch.id }}">{{ branch.branch_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Batch </label>
+                            <select class="form-control" name="batch" id="batch">
+                                <!-- Options will be populated based on branch selection -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Attendance Date </label>
+                            <select class="form-control" name="attendance_date" id="attendance_date">
+                                <!-- Options will be populated based on batch selection -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary btn-block" id="fetch_student">Fetch Student Data</button>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+
+                    <div id="student_data" class="card-footer">
+                        <!-- Table to show student data -->
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Sessions Attended</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student_table_body">
+                                <!-- Student data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /.content -->
+{% endblock main_content %}
+{% block custom_js %}
+<script>
+    $(document).ready(function() {
+        // Fetch batches based on selected branch
+        $("#branch").change(function() {
+            var branch_id = $(this).val();
+            $.ajax({
+                url: '{% url "admin_get_batches" %}',
+                type: 'POST',
+                data: { branch_id: branch_id },
+                success: function(response) {
+                    var json_data = JSON.parse(response);
+                    var html_data = "";
+                    for (var key in json_data) {
+                        html_data += "<option value=" + json_data[key]["id"] + ">" + json_data[key]["name"] + "</option>";
+                    }
+                    $("#batch").html(html_data);
+                    $("#attendance_date").html(""); // Clear attendance dates
+                    $("#student_table_body").html(""); // Clear student table
+                }
+            });
+        });
+
+        // Fetch attendance dates based on selected batch
+        $("#batch").change(function(){
+            var branch_id = $("#branch").val();
+            var batch_id = $(this).val();
+            $.ajax({
+                url: '{% url 'admin_get_attendance_dates' %}',
+                type: 'POST',
+                data: {branch_id: branch_id, batch_id: batch_id},
+                success: function(response) {
+                    var json_data = JSON.parse(response);
+                    var html_data = "";
+                    for (var key in json_data) {
+                        html_data += "<option value='" + json_data[key]["id"] + "'>" + json_data[key]["attendance_date"] + " - " + json_data[key]["attendance_time"] + "</option>";
+                    }
+                    $("#attendance_date").html(html_data).show();
+                    $("#date_block").show();
+                    $("#fetch_student_block").show();
+                }
+            });
+        });
+
+        // Fetch student data based on selected attendance date
+        $("#fetch_student").click(function() {
+            var attendance_date = $("#attendance_date").val();
+            $.ajax({
+                url: '{% url "admin_get_attendance_student" %}',
+                type: 'POST',
+                data: { attendance_date: attendance_date },
+                success: function(response) {
+                    var json_data = JSON.parse(response);
+                    var table_data = "";
+                    for (var key in json_data) {
+                        table_data += "<tr>";
+                        table_data += "<td>" + json_data[key]['id'] + "</td>";
+                        table_data += "<td>" + json_data[key]['name'] + "</td>";
+                        table_data += "<td>" + (json_data[key]['status'] ? "Present" : "Absent") + "</td>";
+                        table_data += "<td>" + json_data[key]['session_count'] + "</td>";
+                        table_data += "</tr>";
+                    }
+                    $("#student_table_body").html(table_data);
+                }
+            });
+        });
+    });
+</script>
+{% endblock custom_js %}

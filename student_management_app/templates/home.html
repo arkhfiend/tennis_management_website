@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tennis Coaching Academy</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="scripts.js" defer></script>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Tennis Coaching Academy</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#courses">Courses</a></li>
+                    <li><a href="#events">Events</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a>About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="{% url 'show_login' %}">Sign In / Sign Up</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h2>Welcome to Tennis Coaching Academy</h2>
+            <p>Your journey to becoming a tennis champion starts here!</p>
+            <a href="#contact" class="btn">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="courses">
+        <div class="container">
+            <h2>Our Courses</h2>
+            <div class="course-items">
+                <div class="course-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h3>Beginner's Course</h3>
+                    <p>Designed for newcomers to tennis. Learn the basics and develop foundational skills.</p>
+                </div>
+                <div class="course-item">
+                    <i class="fas fa-ruler-combined"></i>
+                    <h3>Intermediate Course</h3>
+                    <p>For players with basic skills who want to improve technique and strategy.</p>
+                </div>
+                <div class="course-item">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Advanced Course</h3>
+                    <p>Tailored for experienced players aiming to refine their skills and compete at higher levels.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="events">
+        <div class="container">
+            <h2>Events</h2>
+            <div class="event-items">
+                <div class="event-item">
+                    <h3>Upcoming Tennis Workshop</h3>
+                    <p>Join us for a comprehensive workshop covering advanced techniques and strategies. Date: September 15, 2024.</p>
+                </div>
+                <div class="event-item">
+                    <h3>New Training Facility Opening</h3>
+                    <p>We're excited to announce the opening of our new training facility with enhanced amenities. Date: October 1, 2024.</p>
+                </div>
+                <div class="event-item">
+                    <h3>Summer Tennis Tournament</h3>
+                    <p>Register for our annual Summer Tennis Tournament. Categories for all ages and skill levels. Date: August 20-25, 2024.</p>
+                </div>
+                <div class="event-item">
+                    <h3>Championship Cup</h3>
+                    <p>Participate in our Championship Cup to compete for top honors. Date: November 10-15, 2024.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2>What Our Clients Say</h2>
+            <div class="testimonial-items">
+                <div class="testimonial-item">
+                    <p>"The coaching at Tennis Academy is exceptional! I’ve improved my game significantly." - John Doe</p>
+                </div>
+                <div class="testimonial-item">
+                    <p>"Great facilities and a supportive coaching team. Highly recommend!" - Jane Smith</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <form action="#" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Tennis Coaching Academy. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

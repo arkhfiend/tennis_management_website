@@ -1,0 +1,36 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Branch List
+{% endblock page_title %}
+{% block main_content %}
+<!-- Main content -->
+<section class="content">
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+               <div class="card-header">
+                  <h3 class="card-title">Select a Branch</h3>
+               </div>
+               <!-- /.card-header -->
+               <div class="card-body">
+                  <ul>
+                     {% for branch in branches %}
+                     <li>
+                        <a href="{% url 'batch_list' branch.id %}">{{ branch.name }}</a>
+                     </li>
+                     {% endfor %}
+                  </ul>
+               </div>
+               <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+         </div>
+      </div>
+   </div>
+</section>
+<!-- /.content -->
+{% endblock main_content %}
+{% block custom_js %}
+{% endblock custom_js %}

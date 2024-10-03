@@ -1,0 +1,15 @@
+.navbar{
+    position: fixed;
+    height: 60px;
+    z-index: 8;
+    }
+
+    
+.dropdown-content {
+    top: 100%;
+    margin-top: 2px;
+  }
+  
+.hidden-radio {
+    display: none;
+  }

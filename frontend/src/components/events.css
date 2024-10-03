@@ -1,0 +1,18 @@
+.outer{
+    padding-top: 30px;
+}
+.event-card{
+    z-index: 7;
+    margin-left: 100px;
+    padding-bottom: 20px;
+    padding-right: 10px;
+}
+.event-card img{
+    width:100vh;
+}
+.alternate{
+    margin-right: 550px;
+}
+.lower{
+    margin-right: 500px;
+}

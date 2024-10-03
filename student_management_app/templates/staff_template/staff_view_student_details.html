@@ -1,0 +1,121 @@
+<!-- staff_template/staff_view_students.html -->
+
+{% extends 'staff_template/base_template.html' %}
+
+{% block page_title %}
+View Students
+{% endblock page_title %}
+
+{% block main_content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">View Students</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Branch</label>
+                            <select class="form-control" name="branch" id="branch">
+                                <option value="">Select Branch</option>
+                                {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.branch_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Batch</label>
+                            <select class="form-control" name="batch" id="batch">
+                                <option value="">Select Batch</option>
+                                <option value="all">All</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary btn-block" id="fetch_students">Fetch Students</button>
+                        </div>
+                        <div class="form-group">
+                            <table class="table table-bordered" id="students_table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Batch</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Student rows will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+    $(document).ready(function(){
+        // Fetch batches based on selected branch
+        $("#branch").change(function(){
+            var branch_id = $(this).val();
+
+            $.ajax({
+                url: '{% url "get_batches_by_branch" %}',
+                type: 'POST',
+                data: {
+                    branch_id: branch_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    var batch_select = $("#batch");
+                    batch_select.empty();
+                    batch_select.append('<option value="">Select Batch</option>');
+                    batch_select.append('<option value="all">All</option>');
+                    $.each(response, function(index, batch) {
+                        batch_select.append('<option value="'+ batch.id +'">'+ batch.name +'</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    alert("Error fetching batches: " + error);
+                }
+            });
+        });
+
+        // Fetch students based on selected branch and batch
+        $("#fetch_students").click(function(){
+            var branch_id = $("#branch").val();
+            var batch_id = $("#batch").val();
+
+            if (!branch_id) {
+                alert("Please select a branch.");
+                return;
+            }
+
+            $.ajax({
+                url: '{% url "get_students_by_branch_and_batch" %}',
+                type: 'POST',
+                data: {
+                    branch_id: branch_id,
+                    batch_id: batch_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    var students_table = $("#students_table tbody");
+                    students_table.empty();
+                    $.each(response, function(index, student) {
+                        students_table.append('<tr><td>'+ student.id +'</td><td>'+ student.admin__first_name +' '+ student.admin__last_name +'</td><td>'+ student.batch__template__name +'</td></tr>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    alert("Error fetching students: " + error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock custom_js %}

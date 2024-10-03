@@ -1,0 +1,42 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block page_title %}
+Batch List
+{% endblock page_title %}
+
+{% block main_content %}
+<!-- Main content -->
+<section class="content">
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-md-12">
+            <!-- Batch List -->
+            <div class="card">
+               <div class="card-header">
+                  <h3 class="card-title">Batches for {{ branch.branch_name }}</h3>
+               </div>
+               <!-- /.card-header -->
+               <div class="card-body">
+                  <ul>
+                     {% for batch in batches %}
+                     <li>
+                            <a href="{% url 'student_details' branch.id batch.id %}" class="btn btn-info">{{ batch.template.name }}</a>
+                     </li>
+                     {% empty %}
+                     <li>No batches available.</li>
+                     {% endfor %}
+                  </ul>
+               </div>
+               <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+         </div>
+      </div>
+   </div>
+</section>
+<!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<!-- Custom JS for this page -->
+{% endblock custom_js %}

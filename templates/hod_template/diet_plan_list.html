@@ -1,0 +1,43 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}Assigned Diet Plans{% endblock page_title %}
+{% block main_content %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title">Diet Plan Assignments</h3>
+          </div>
+          <div class="card-body">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Branch</th>
+                  <th>Batch</th>
+                  <th>Student</th>
+                  <th>Assigned At</th>
+                  <th>PDF</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for assignment in diet_plans %}
+                <tr>
+                  <td>{{ assignment.diet_plan.title }}</td>
+                  <td>{{ assignment.branch.name }}</td>
+                  <td>{{ assignment.batch.template.name }}</td>
+                  <td>{{ assignment.student.get_full_name }}</td>
+                  <td>{{ assignment.assigned_at }}</td>
+                  <td><a href="{{ assignment.diet_plan.pdf.url }}" target="_blank">View PDF</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock main_content %}

@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System | Signup Student</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+</head>
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#"><b>Student</b> Management System</a>
+        </div>
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Sign up as a student</p>
+                <form action="{% url 'do_signup_student' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="input-group mb-3">
+                        <label for="first_name" class="sr-only">First Name</label>
+                        <input type="text" id="first_name" class="form-control" name="first_name" placeholder="First Name" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="last_name" class="sr-only">Last Name</label>
+                        <input type="text" id="last_name" class="form-control" name="last_name" placeholder="Last Name" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="username" class="sr-only">Username</label>
+                        <input type="text" id="username" class="form-control" name="username" placeholder="Username" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="email" class="sr-only">Email</label>
+                        <input type="email" id="email" class="form-control" name="email" placeholder="Email" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="password" class="sr-only">Password</label>
+                        <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="dob" class="sr-only">Date of Birth</label>
+                        <input type="date" id="dob" class="form-control" name="dob" placeholder="Date of Birth" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-calendar-alt"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="contact" class="sr-only">Contact Number</label>
+                        <input type="text" id="contact" class="form-control" name="contact" placeholder="Contact Number" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="gender" class="sr-only">Gender</label>
+                        <select class="form-control" id="gender" name="gender" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-venus-mars"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="branch-select" class="sr-only">Branch</label>
+                        <select class="form-control" id="branch-select" name="branch" required>
+                            <option value="" disabled selected>Select Branch</option>
+                            {% for branch in branches %}
+                                <option value="{{ branch.id }}">{{ branch.branch_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-building"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="batch-select" class="sr-only">Batch</label>
+                        <select class="form-control" id="batch-select" name="batch" required>
+                            <option value="" disabled selected>Select Batch</option>
+                        </select>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-users"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <label for="profile_pic" class="sr-only">Profile Picture</label>
+                        <input type="file" id="profile_pic" class="form-control" name="profile_pic" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-camera"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            // Fetch batches when a branch is selected
+            $('#branch-select').change(function(){
+                var branchId = $(this).val();
+                if(branchId){
+                    $.ajax({
+                        url: "{% url 'get_batches_signup' %}",
+                        type: "POST",
+                        data: {
+                            'branch_id': branchId,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(data){
+                            $('#batch-select').empty().append('<option value="">Select Batch</option>');
+                            $.each(data, function(index, batch){
+                                $('#batch-select').append('<option value="'+batch.id+'">'+batch.name+'</option>');
+                            });
+                        },
+                        error: function(){
+                            alert('An error occurred while fetching the batches.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

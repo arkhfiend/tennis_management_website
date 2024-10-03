@@ -1,0 +1,101 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block page_title %}
+Filter Students
+{% endblock page_title %}
+
+{% block main_content %}
+<!-- Main content -->
+<section class="content">
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-md-12">
+            <!-- General form elements -->
+            <div class="card card-primary">
+               <div class="card-header">
+                  <h3 class="card-title">Filter Students by Branch and Batch</h3>
+               </div>
+               <!-- /.card-header -->
+               <!-- form start -->
+               <form method="POST" action="">
+                  {% csrf_token %}
+                  <div class="card-body">
+                     <!-- Branch Selection -->
+                     <div class="form-group">
+                        <label for="branch">Select Branch</label>
+                        <select name="branch" id="branch" class="form-control" onchange="this.form.submit()">
+                           <option value="">-- Select Branch --</option>
+                           {% for branch in branches %}
+                           <option value="{{ branch.id }}" {% if selected_branch == branch.id|string %}selected{% endif %}>
+                              {{ branch.name }}
+                           </option>
+                           {% endfor %}
+                        </select>
+                     </div>
+
+                     <!-- Batch Selection (only shown after selecting a branch) -->
+                     {% if selected_branch %}
+                     <div class="form-group">
+                        <label for="batch">Select Batch</label>
+                        <select name="batch" id="batch" class="form-control" onchange="this.form.submit()">
+                           <option value="all" {% if selected_batch == 'all' %}selected{% endif %}>All Batches</option>
+                           {% for batch in batches %}
+                           <option value="{{ batch.id }}" {% if selected_batch == batch.id%}selected{% endif %}>
+                              {{ batch.name }}
+                           </option>
+                           {% endfor %}
+                        </select>
+                     </div>
+                     {% endif %}
+                  </div>
+                  <!-- /.card-body -->
+               </form>
+            </div>
+            <!-- /.card -->
+
+            <!-- Students Table -->
+            {% if students %}
+            <div class="card">
+               <div class="card-header">
+                  <h3 class="card-title">Students List</h3>
+               </div>
+               <!-- /.card-header -->
+               <div class="card-body table-responsive p-0">
+                  <table class="table table-hover text-nowrap">
+                     <thead>
+                        <tr>
+                           <th>Student Name</th>
+                           <th>Batch</th>
+                           <th>Attendance</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        {% for student in students %}
+                        <tr>
+                           <td>{{ student.name }}</td>
+                           <td>{{ student.batch.name }}</td>
+                           <td>{{ student.attendance }}</td>
+                        </tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+               </div>
+               <!-- /.card-body -->
+            </div>
+            {% elif selected_branch and not students %}
+            <div class="alert alert-warning">
+               No students found for the selected batch or branch.
+            </div>
+            {% endif %}
+         </div>
+      </div>
+   </div>
+</section>
+<!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+// Optionally, you can add custom JS here if needed.
+</script>
+{% endblock custom_js %}

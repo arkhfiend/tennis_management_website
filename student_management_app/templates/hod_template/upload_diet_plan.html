@@ -1,0 +1,110 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Upload Diet Plan
+{% endblock page_title %}
+{% block main_content %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title">Upload Diet Plan</h3>
+          </div>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="card-body">
+              <div class="form-group">
+                {{ form.title.label_tag }}
+                {{ form.title }}
+              </div>
+              <div class="form-group">
+                {{ form.pdf.label_tag }}
+                {{ form.pdf }}
+              </div>
+              <div class="form-group">
+                {{ form.branch.label_tag }}
+                {{ form.branch }}
+              </div>
+              <div class="form-group">
+                <label for="batch">Select Batch</label>
+                <select id="batch-select" class="form-control" name="batch">
+                  <option value="">Select Batch</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="students">Select Students</label>
+                <div id="students-list">
+                  <p>No students available</p>
+                </div>
+              </div>
+            </div>
+              {% if messages %}
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+                {% endif %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+                {% endif %}
+                {% endfor %}
+              {% endif %}
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Upload and Assign</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Fetch batches when a branch is selected
+        $('#id_branch').change(function(){
+            var branchId = $(this).val();
+            if(branchId){
+                $.ajax({
+                    url: "{% url 'get_batch' %}",
+                    type: "POST",
+                    data: {
+                        'branch_id': branchId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(data){
+                        $('#batch-select').empty().append('<option value="">Select Batch</option>');
+                        $.each(data, function(index, batch){
+                            $('#batch-select').append('<option value="'+batch.id+'">'+batch.name+'</option>');
+                        });
+                    }
+                });
+            }
+        });
+
+        // Fetch students when a batch is selected
+        $('#batch-select').change(function(){
+            var branchId = $('#id_branch').val();
+            var batchId = $(this).val();
+            if(branchId && batchId){
+                $.ajax({
+                    url: "{% url 'get_student' %}",
+                    type: "POST",
+                    data: {
+                        'branch_id': branchId,
+                        'batch_id': batchId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(data){
+                        $('#students-list').empty();
+                        $.each(data, function(index, student){
+                            $('#students-list').append('<input type="checkbox" name="students" value="'+student.id+'"> '+student.name+'<br>');
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock main_content %}

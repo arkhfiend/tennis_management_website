@@ -1,0 +1,37 @@
+
+.testimonials-container {
+    margin-left: 90px;
+    max-width: 1200px;
+  }
+  
+  .testimonials-content {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .testimonial-card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .testimonial-author {
+    font-style: italic;
+  }
+  
+  .show-more-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+  }
+  
+  .show-more-btn:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
