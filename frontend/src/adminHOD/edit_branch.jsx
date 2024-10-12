@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const EditBranch = () => {
-    const { id } = useParams(); // Get the branch ID from the URL
     const location = useLocation();
-    const [branch, setBranch] = useState({ name: '' });
+    const [branch, setBranch] = useState({ id: '', name: '' });
     const navigate = useNavigate();
 
     useEffect(() => {
         if (location.state && location.state.branch) {
             const branchData = location.state.branch;
-            setBranch({ name: branchData.name });
+            setBranch({ id: branchData.id, name: branchData.name });
         } else {
             toast.error('Branch details not available.');
             // Optionally redirect to the manage branches page
@@ -28,8 +27,8 @@ const EditBranch = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/edit_branch_save', {
-                branch_id: id,
+            await axios.post('http://localhost:8000/api/edit_branch_save', {
+                branch_id: branch.id,
                 branch: branch.name,
             });
             toast.success('Branch updated successfully.');
@@ -47,7 +46,7 @@ const EditBranch = () => {
                     <div className="w-full max-w-lg">
                         <div className="bg-base-200 shadow-xl rounded-lg">
                             <div className="bg-primary text-primary-content p-4 rounded-t-lg">
-                                <h3 className="text-xl font-bold">Edit Branch | Branch ID: {id}</h3>
+                                <h3 className="text-xl font-bold">Edit Branch | Branch ID: {branch.id}</h3>
                                 <p className="text-lg">Branch Name: {branch.name}</p>
                             </div>
                             <form onSubmit={handleSubmit} className="p-4">
@@ -63,7 +62,7 @@ const EditBranch = () => {
                                             onChange={handleChange}
                                             required
                                         />
-                                        <input type="hidden" name="branch_id" value={id} />
+                                        <input type="hidden" name="branch_id" value={branch.id} />
                                     </div>
                                 </div>
                                 <div className="p-4">

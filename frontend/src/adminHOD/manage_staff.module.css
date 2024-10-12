@@ -1,0 +1,64 @@
+
+
+.card {
+  margin-top: 20px;
+  margin-left: 90px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  background-color: #fff; /* White background for cards */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for cards */
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 15px;
+  font-weight: bold; /* Bold text for header */
+}
+
+.card-title {
+  font-size: 18px;
+  margin: 0;
+  color: #333; /* Darker text color for better readability */
+}
+
+.card-tools {
+  float: right;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+  border-collapse: collapse; /* Collapse borders for cleaner look */
+}
+
+.table th,
+.table td {
+  padding: 12px; /* Add padding for table cells */
+  border: 1px solid #ddd; /* Border for table cells */
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.btn {
+  margin-right: 5px;
+  padding: 8px 12px; /* Add padding for buttons */
+  border: none; /* Remove default border */
+  border-radius: 4px; /* Rounded corners for buttons */
+  background-color: #007bff; /* Primary button color */
+  color: #fff; /* White text color */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.form-control{
+  margin: 20px;
+}

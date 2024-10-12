@@ -23,11 +23,12 @@ const AddStaff = () => {
   const handleEmailCheck = async (e) => {
     const email = e.target.value;
     setFormData({ ...formData, email });
-
+  
     if (email !== '') {
       try {
         const response = await axios.post('http://localhost:8000/api/check_email_exist', { email });
-        if (response.data === 'True') {
+        
+        if (response.data.exists) {
           setEmailStatus('Email Not Available');
         } else {
           setEmailStatus('Email Available');
@@ -39,15 +40,17 @@ const AddStaff = () => {
       setEmailStatus('');
     }
   };
+  
 
   const handleUsernameCheck = async (e) => {
     const username = e.target.value;
     setFormData({ ...formData, username });
-
+  
     if (username !== '') {
       try {
         const response = await axios.post('http://localhost:8000/api/check_username_exist', { username });
-        if (response.data === 'True') {
+        
+        if (response.data.exists) {
           setUsernameStatus('Username Not Available');
         } else {
           setUsernameStatus('Username Available');
@@ -59,13 +62,25 @@ const AddStaff = () => {
       setUsernameStatus('');
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:8000/api/add_staff_save', formData);
       toast.success('Staff added successfully!');
-      console.log('Form submitted successfully:', response);
+      // Reset form data to initial state
+      setFormData({
+        email: '',
+        password: '',
+        first_name: '',
+        last_name: '',
+        username: '',
+        salary: ''
+      });
+      // Reset status messages
+      setEmailStatus('');
+      setUsernameStatus('');
     } catch (error) {
       toast.error('Error adding staff!');
       console.error('Form submission failed:', error);
@@ -92,7 +107,7 @@ const AddStaff = () => {
                       placeholder="Enter email"
                       value={formData.email}
                       onChange={handleEmailCheck}
-                      autoComplete="on"
+                      autoComplete="off"
                     />
                     {emailStatus && (
                       <span
@@ -112,7 +127,7 @@ const AddStaff = () => {
                       placeholder="Enter username"
                       value={formData.username}
                       onChange={handleUsernameCheck}
-                      autoComplete="on"
+                      autoComplete="off"
                     />
                     {usernameStatus && (
                       <span

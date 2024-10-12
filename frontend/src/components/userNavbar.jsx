@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import './user_navbar.css';
 import { AuthContext } from './authContext';
 
@@ -7,6 +8,9 @@ function Navbar() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'winter');
   const { setAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [history, setHistory] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   const handleThemeChange = (e) => {
     const selectedTheme = e.target.value;
@@ -18,21 +22,56 @@ function Navbar() {
     document.querySelector('html').setAttribute('data-theme', theme);
   }, [theme]);
 
-  const handlelogoutRedirect = () => {
+  useEffect(() => {
+    setHistory((prevHistory) => [...prevHistory, location.pathname]);
+    setCurrentIndex((prevIndex) => prevIndex + 1);
+  }, [location.pathname]);
+
+  const handleLogoutRedirect = () => {
     navigate('/');
     setAuthenticated(true);
   };
 
+  const handleBackNavigation = () => {
+    if (currentIndex > 0) {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      navigate(history[newIndex]);
+    }
+  };
+
+  const handleForwardNavigation = () => {
+    if (currentIndex < history.length - 1) {
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      navigate(history[newIndex]);
+    }
+  };
+
   return (
-    <div className=" user_navbar bg-gradient-to-r from-yellow-400 to-orange-500 px-4 h-60px">
-      <div>
+    <div className="user_navbar bg-gradient-to-r from-yellow-400 to-orange-500 px-4 h-60px flex items-center justify-between">
+      <div className="flex items-center gap-2" style={{ position: 'absolute', left: '90px', top: '5px' }}>
+        <button
+          className="bg-gray-700 hover:bg-black text-white font-bold py-3 px-5 rounded-full glass flex items-center justify-center"
+          onClick={handleBackNavigation}
+          disabled={currentIndex <= 0}
+        >
+          <FaArrowLeft className="h-5 w-5" />
+        </button>
+        <button
+          className="bg-gray-700 hover:bg-black text-white font-bold py-3 px-5 rounded-full glass flex items-center justify-center"
+          onClick={handleForwardNavigation}
+          disabled={currentIndex >= history.length - 1}
+        >
+          <FaArrowRight className="h-5 w-5" />
+        </button>
       </div>
-      <div className="flex-none gap-2 ">
+      <div className="flex items-center gap-4 ml-auto">
         <button
           className="bg-gray-700 hover:bg-black text-white font-bold py-2 px-4 rounded glass"
-          onClick={handlelogoutRedirect}
+          onClick={handleLogoutRedirect}
         >
-          logout
+          Logout
         </button>
         <div className="dropdown relative">
           <div tabIndex={0} role="button" className="btn m-1">
@@ -119,7 +158,7 @@ function Navbar() {
                   className="hidden-radio"
                 />
                 Aqua
-              </label> 
+              </label>
             </li>
             <li>
               <label className="theme-controller btn btn-sm btn-block btn-ghost justify-start">

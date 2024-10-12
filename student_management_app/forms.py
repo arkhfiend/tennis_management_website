@@ -36,7 +36,8 @@ class AddStudentForm(forms.Form):
     )
     gender_choice = [
         ("Male", "Male"),
-        ("Female", "Female")
+        ("Female", "Female"),
+        ("Other", "Other")
     ]
     gender = forms.ChoiceField(
         label="Gender", choices=gender_choice,

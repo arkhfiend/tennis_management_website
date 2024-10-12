@@ -1,6 +1,9 @@
 import React from 'react';
 import './sidebar.css';
 import logo from '../assets/images/cs_logo.png';
+import { Link } from 'react-router-dom';
+
+
 const Sidebar = () => {
   const scrollToSection = (sectionId, event) => {
     event.preventDefault(); // Prevent the default link behavior
@@ -39,6 +42,12 @@ const Sidebar = () => {
             <span className="material-symbols-outlined"> groups </span>Events
           </a>
         </li>
+        
+<li>
+  <Link to="/gallery">
+    <span className="material-symbols-outlined"> photo_library </span>Gallery
+  </Link>
+</li>
         <li>
           <a href="#" onClick={(event) => scrollToSection('about', event)}>
             <span className="material-symbols-outlined"> account_circle </span>About Us

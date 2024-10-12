@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UploadDiet = () => {
-  const [Branches, setBranches] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [batches, setBatches] = useState([]);
   const [students, setStudents] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState('');
@@ -34,7 +36,7 @@ const UploadDiet = () => {
 
   // Fetch branches on component mount
   useEffect(() => {
-    axios.get('/api/branches') // Replace with actual API endpoint for branches
+    axios.get('http://localhost:8000/api/branches')
       .then(response => {
         setBranches(response.data);
       })
@@ -44,13 +46,11 @@ const UploadDiet = () => {
   }, []);
 
   // Fetch batches when a branch is selected
-  const handleBranchChange = (e) => {
-    const branchId = e.target.value;
-    setSelectedBranch(branchId);
-    if (branchId) {
-      axios.post('/api/get_batch', { branch_id: branchId }) // Replace with actual API endpoint for batches
+  useEffect(() => {
+    if (selectedBranch) {
+      axios.get(`http://localhost:8000/api/branches/${selectedBranch}/batches/`)
         .then(response => {
-          setBatches(response.data);
+          setBatches(response.data.batches);
         })
         .catch(() => {
           console.error('Failed to fetch batches');
@@ -59,16 +59,14 @@ const UploadDiet = () => {
       setBatches([]);
       setStudents([]);
     }
-  };
+  }, [selectedBranch]);
 
   // Fetch students when a batch is selected
-  const handleBatchChange = (e) => {
-    const batchId = e.target.value;
-    setSelectedBatch(batchId);
-    if (selectedBranch && batchId) {
-      axios.post('/api/get_student', { branch_id: selectedBranch, batch_id: batchId }) // Replace with actual API endpoint for students
+  useEffect(() => {
+    if (selectedBatch) {
+      axios.get(`/api/branch/${selectedBranch}/batch/${selectedBatch}/student-details/`)
         .then(response => {
-          setStudents(response.data);
+          setStudents(response.data.students);
         })
         .catch(() => {
           console.error('Failed to fetch students');
@@ -76,6 +74,32 @@ const UploadDiet = () => {
     } else {
       setStudents([]);
     }
+  }, [selectedBatch]);
+
+  // Handle branch change
+  const handleBranchChange = (e) => {
+    const branchId = e.target.value;
+    setSelectedBranch(branchId);
+    setFormData({
+      ...formData,
+      branch: branchId,
+      batch: '',
+      students: []
+    });
+    setBatches([]);
+    setSelectedBatch('');
+    setStudents([]);
+  };
+
+  // Handle batch change
+  const handleBatchChange = (e) => {
+    const batchId = e.target.value;
+    setSelectedBatch(batchId);
+    setFormData({
+      ...formData,
+      batch: batchId,
+      students: []
+    });
   };
 
   // Handle form submission
@@ -88,32 +112,42 @@ const UploadDiet = () => {
     uploadData.append('batch', formData.batch);
     uploadData.append('students', formData.students);
 
-    axios.post('/api/upload_diet_plan', uploadData) // Replace with actual upload API
+    axios.post('http://localhost:8000/api/upload_diet_plan/', uploadData) // Replace with actual upload API
       .then(response => {
-        setMessages([{ text: 'Diet plan uploaded successfully', type: 'success' }]);
+        toast.success('Diet plan uploaded successfully');
         // Reset form or handle successful response
+        setFormData({
+          title: '',
+          pdf: null,
+          branch: '',
+          batch: '',
+          students: []
+        });
+        setSelectedBranch('');
+        setSelectedBatch('');
+        setMessages([]);
       })
       .catch(() => {
-        setMessages([{ text: 'Failed to upload diet plan', type: 'error' }]);
+        toast.error('Failed to upload diet plan');
       });
   };
 
   return (
-    <section className="content">
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-md-12">
-            <div className="card card-primary">
-              <div className="card-header">
-                <h3 className="card-title">Upload Diet Plan</h3>
+    <section className="content p-4">
+      <div className="container mx-auto p-4">
+        <div className="flex justify-center">
+          <div className="w-full max-w-lg">
+            <div className="bg-base-200 shadow-xl rounded-lg">
+              <div className="bg-primary text-primary-content p-4 rounded-t-lg">
+                <h3 className="text-xl font-bold">Upload Diet Plan</h3>
               </div>
-              <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <div className="card-body">
-                  <div className="form-group">
-                    <label htmlFor="title">Title</label>
+              <form onSubmit={handleSubmit} className="p-4" encType="multipart/form-data">
+                <div className="p-4 space-y-4">
+                  <div className="mb-4">
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                       id="title"
                       name="title"
                       value={formData.title}
@@ -121,37 +155,38 @@ const UploadDiet = () => {
                       required
                     />
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="pdf">PDF</label>
+                  <div className="mb-4">
+                    <label htmlFor="pdf" className="block text-sm font-medium text-gray-700">PDF</label>
                     <input
                       type="file"
-                      className="form-control"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                       id="pdf"
                       name="pdf"
                       onChange={handleFileChange}
                       required
                     />
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="branch">Select Branch</label>
+                  <div className="mb-4">
+                    <label htmlFor="branch" className="block text-sm font-medium text-gray-700">Select Branch</label>
                     <select
                       id="branch"
-                      className="form-control"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                       name="branch"
+                      value={formData.branch}
                       onChange={handleBranchChange}
                       required
                     >
                       <option value="">Select Branch</option>
-                      {Branches.map(branch => (
+                      {branches.map(branch => (
                         <option key={branch.id} value={branch.id}>{branch.branch_name}</option>
                       ))}
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="batch">Select Batch</label>
+                  <div className="mb-4">
+                    <label htmlFor="batch" className="block text-sm font-medium text-gray-700">Select Batch</label>
                     <select
                       id="batch-select"
-                      className="form-control"
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                       name="batch"
                       value={formData.batch}
                       onChange={handleBatchChange}
@@ -159,13 +194,13 @@ const UploadDiet = () => {
                     >
                       <option value="">Select Batch</option>
                       {batches.map(batch => (
-                        <option key={batch.id} value={batch.id}>{batch.name}</option>
+                        <option key={batch.id} value={batch.id}>{batch.template_name}</option>
                       ))}
                     </select>
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="students">Select Students</label>
-                    <div id="students-list">
+                  <div className="mb-4">
+                    <label htmlFor="students" className="block text-sm font-medium text-gray-700">Select Students</label>
+                    <div id="students-list" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
                       {students.length > 0 ? (
                         students.map(student => (
                           <div key={student.id}>
@@ -193,22 +228,17 @@ const UploadDiet = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Display Messages */}
-                {messages.length > 0 && messages.map((message, index) => (
-                  <div key={index} className={`alert alert-${message.type}`} style={{ marginTop: '10px' }}>
-                    {message.text}
-                  </div>
-                ))}
-
-                <div className="card-footer">
-                  <button type="submit" className="btn btn-primary">Upload and Assign</button>
+                <div className="p-4">
+                  <button type="submit" className="btn btn-primary w-full">
+                    Upload and Assign
+                  </button>
                 </div>
               </form>
             </div>
           </div>
         </div>
       </div>
+      <ToastContainer />
     </section>
   );
 };

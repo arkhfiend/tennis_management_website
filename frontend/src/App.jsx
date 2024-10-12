@@ -40,6 +40,9 @@ import SalaryManagement from "./adminHOD/SalaryManagement";
 import PaymentDetails from "./adminHOD/PaymentDetails";
 import PaySalary from "./adminHOD/PaySalary";
 import ViewAttendance from "./adminHOD/view_attendance";
+import ManageStudent from "./adminHOD/manage_students";
+import Gallery from "./components/Gallery";
+import EditAssignment from "./adminHOD/edit_assign";
 
 
 import './assets/images/cs_logo.png'
@@ -64,6 +67,7 @@ function App() {
           path="/" 
           element={
             <>
+            <Loader/>
               <Sidebar />
               <Navbar />
               <Hero />
@@ -86,6 +90,7 @@ function App() {
             </>
           } 
         />
+        <Route path="/gallery" element={<Gallery />} />
         <Route path="/login" element={<Login />} />
         <Route 
           path="/admin" 
@@ -116,6 +121,8 @@ function App() {
           <Route path="payment_details" element={<PaymentDetails />} />
           <Route path="pay_salary" element={<PaySalary />} />
           <Route path="view_attendance" element={<ViewAttendance />} />
+          <Route path="manage_student" element={<ManageStudent />} />
+          <Route path="edit_assign/:assignId" element={<EditAssignment />} />
 
 </Route>
         <Route 

@@ -3,9 +3,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const ManageBranches = () => {
-    const [Branches, setBranches] = useState([]);
+    const [branches, setBranches] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
@@ -26,8 +27,8 @@ const ManageBranches = () => {
         const confirmDelete = window.confirm('Are you sure you want to delete this branch?');
         if (confirmDelete) {
             try {
-                await axios.post(`http://localhost:8000/api/delete_branch/${id}`); // Adjust the endpoint as needed
-                setBranches(Branches.filter(branch => branch.id !== id));
+                await axios.post(`http://localhost:8000/api/delete_branch/${id}/`);
+                setBranches(branches.filter(branch => branch.id !== id));
                 toast.success('Branch deleted successfully.');
             } catch (error) {
                 toast.error('Failed to delete branch.');
@@ -39,7 +40,7 @@ const ManageBranches = () => {
         setSearchTerm(e.target.value);
     };
 
-    const filteredBranches = Branches.filter(branch =>
+    const filteredBranches = branches.filter(branch =>
         branch.branch_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -80,18 +81,16 @@ const ManageBranches = () => {
                                                 <td className="border px-4 py-2">{branch.branch_name}</td>
                                                 <td className="border px-4 py-2">
                                                     <div className="flex space-x-2">
-                                                        <button
+                                                        <FaEdit
                                                             onClick={() => navigate(`/admin/edit_branch/${branch.id}`, { state: { branch: { id: branch.id, name: branch.branch_name } } })}
-                                                            className="btn btn-success"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
+                                                            className="text-green-500 cursor-pointer"
+                                                            size={20}
+                                                        />
+                                                        <FaTrash
                                                             onClick={() => handleDelete(branch.id)}
-                                                            className="btn btn-danger"
-                                                        >
-                                                            Delete
-                                                        </button>
+                                                            className="text-red-500 cursor-pointer"
+                                                            size={20}
+                                                        />
                                                     </div>
                                                 </td>
                                             </tr>

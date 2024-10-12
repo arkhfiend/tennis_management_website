@@ -3,39 +3,40 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
-const ManageAssignments = () => {
-  const [assignments, setAssignments] = useState([]);
+const ManageAssign = () => {
+  const [assigns, setAssign] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch assignment data from the API
-    const fetchAssignments = async () => {
+    // Fetch assign data from the API
+    const fetchAssign = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/manage_assign');
-        setAssignments(response.data); // Assuming response.data is an array of assignments
+        setAssign(response.data); // Assuming response.data is an array of assigns
       } catch (error) {
-        toast.error('Failed to fetch assignments.');
+        toast.error('Failed to fetch assigns.');
       }
     };
 
-    fetchAssignments();
+    fetchAssign();
   }, []);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this assignment?');
+    const confirmDelete = window.confirm('Are you sure you want to delete this assign?');
     if (confirmDelete) {
       try {
-        const response = await axios.post(`http://localhost:8000/api/delete-assign/${id}`); // Adjust the endpoint as needed
-        if (response.data.success) {
-          toast.success('Assignment deleted successfully.');
-          setAssignments(assignments.filter((assignment) => assignment.id !== id)); // Remove the deleted assignment from state
+        const response = await axios.delete(`http://localhost:8000/api/delete-assign/${id}/`); // Changed to DELETE method
+        if (response.data.message === "Assignment deleted successfully") {
+          toast.success('Assign deleted successfully.');
+          setAssign(assigns.filter((assign) => assign.id !== id)); // Remove the deleted assign from state
         } else {
-          toast.error('Failed to delete assignment.');
+          toast.error('Failed to delete assign.');
         }
       } catch (error) {
-        toast.error('Error while deleting assignment.');
+        toast.error('Error while deleting assign.');
       }
     }
   };
@@ -44,8 +45,9 @@ const ManageAssignments = () => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredAssignments = assignments.filter((assignment) =>
-    `${assignment.staff.first_name} ${assignment.staff.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAssigns = assigns.filter((assign) =>
+    assign.staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    assign.branch.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -55,7 +57,7 @@ const ManageAssignments = () => {
           <div className="w-full max-w-7xl">
             <div className="bg-base-200 shadow-xl rounded-lg">
               <div className="bg-primary text-primary-content p-4 rounded-t-lg flex justify-between items-center">
-                <h3 className="text-xl font-bold">Assignment Details</h3>
+                <h3 className="text-xl font-bold">Assign Details</h3>
                 <div className="flex items-center space-x-2">
                   <input
                     type="text"
@@ -80,33 +82,31 @@ const ManageAssignments = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAssignments.length > 0 ? (
-                      filteredAssignments.map((assignment, index) => (
-                        <tr key={assignment.id}>
+                    {filteredAssigns.length > 0 ? (
+                      filteredAssigns.map((assign, index) => (
+                        <tr key={assign.id}>
                           <td className="border px-4 py-2">{index + 1}</td>
-                          <td className="border px-4 py-2">{`${assignment.staff.first_name} ${assignment.staff.last_name}`}</td>
-                          <td className="border px-4 py-2">{assignment.branch.branch_name}</td>
+                          <td className="border px-4 py-2">{assign.staff.name}</td>
+                          <td className="border px-4 py-2">{assign.branch.name}</td>
                           <td className="border px-4 py-2">
                             <div className="flex space-x-2">
-                              <button
-                                onClick={() => navigate(`/edit_assign/${assignment.id}`, { state: { assignment } })}
-                                className="btn btn-success"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(assignment.id)}
-                                className="btn btn-danger"
-                              >
-                                Delete
-                              </button>
+                              <FaEdit
+                                onClick={() => navigate(`/admin/edit_assign/${assign.id}`, { state: { assign } })}
+                                className="text-green-500 cursor-pointer"
+                                size={20}
+                              />
+                              <FaTrash
+                                onClick={() => handleDelete(assign.id)}
+                                className="text-red-500 cursor-pointer"
+                                size={20}
+                              />
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="border px-4 py-2 text-center">No assignments found.</td>
+                        <td colSpan="4" className="border px-4 py-2 text-center">No assigns found.</td>
                       </tr>
                     )}
                   </tbody>
@@ -121,4 +121,4 @@ const ManageAssignments = () => {
   );
 };
 
-export default ManageAssignments;
+export default ManageAssign;

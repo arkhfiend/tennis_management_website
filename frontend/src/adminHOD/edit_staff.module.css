@@ -1,0 +1,17 @@
+.card {
+    margin-top: 20px;
+    margin-left: 90px;
+  }
+  
+  .cardHeader {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .cardBody {
+    padding: 20px;
+  }
+  
+  .cardFooter {
+    padding: 10px;
+  }

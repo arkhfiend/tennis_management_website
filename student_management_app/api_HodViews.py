@@ -1,16 +1,12 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-from student_management_app.models import CustomUser, Staffs, Student, \
-     LeaveReportStaff, AttendanceReport,FeedBackStudents, \
-    NotificationStudent, NotificationStaffs, Branches, Batch, StaffBranchAssignment, DietPlans, DietPlanAssignments, \
+from rest_framework.decorators import permission_classes
+from student_management_app.models import CustomUser,\
+     LeaveReportStaff,\
+    NotificationStaffs, StaffBranchAssignment, DietPlans, DietPlanAssignments, \
     Attendances
 from student_management_app.forms import AddStudentForm, EditStudentForm, AssignStaffForm, DietPlanForm
 import logging
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import json
 import requests
 from rest_framework.permissions import AllowAny
@@ -20,7 +16,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum
-from .models import Student, Staffs, Branches, Batch, PaymentRecord, SalaryRecord, AttendanceReport, NotificationStudent, FeedBackStudents
+from .models import Student, Staffs, Branches, Batch, PaymentRecord, SalaryRecord, AttendanceReport, NotificationStudent, FeedBackStudents, BatchTemplate
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -31,7 +27,7 @@ def admin_home(request):
 
     # Count total branches and batches
     branch_count = Branches.objects.count()
-    batch_count = Batch.objects.count()
+    batch_count = BatchTemplate.objects.count()
 
     # Calculate total payments and salaries
     total_payments = PaymentRecord.objects.aggregate(Sum('amount'))['amount__sum'] or 0
@@ -127,29 +123,52 @@ def add_staff_save(request):
     except Exception as e:
         return Response({"error": str(e)}, status=400)
 
-@api_view(['DELETE'])
-@permission_classes([AllowAny])
-def delete_staff(request, staff_id):
-    try:
-        # Attempt to retrieve the staff member
-        staff_member = Staffs.objects.get(id=staff_id)
-        staff_member.delete()  # Delete the staff member
-        return Response({"message": "Staff member deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-    except Staffs.DoesNotExist:
-        return Response({"error": "Staff member not found"}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['DELETE'])  # Handle DELETE requests
+@permission_classes([AllowAny])  # Allow anyone to access this endpoint
+def delete_staff(request, id):
+    try:
+        staff = CustomUser.objects.get(id=id)  # Fetch staff by ID
+        staff.delete()  # Delete the staff
+        return Response({"message": "Staff deleted successfully."}, status=status.HTTP_200_OK)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "Staff does not exist."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": f"An error occurred: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+import logging
+
+logger = logging.getLogger(__name__)
 
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
 def delete_student(request, id):
+    logger.info(f"Attempting to delete student with admin id {id}")
     try:
-        student = CustomUser.objects.get(id=id)
+        # First, delete the student record
+        student = Student.objects.get(admin_id=id)
         student.delete()
-        return Response({"message": "Student deleted successfully"})
+        logger.info(f"Student with admin id {id} deleted successfully")
+        
+        # Then, delete the corresponding user
+        user = CustomUser.objects.get(id=id)
+        user.delete()
+        logger.info(f"User with id {id} deleted successfully")
+        
+        return Response({"message": "Student and user deleted successfully!"}, status=200)
+    except Student.DoesNotExist:
+        logger.error(f"Student with admin id {id} not found.")
+        return Response({"error": "Student not found!"}, status=404)
     except CustomUser.DoesNotExist:
-        return Response({"error": "Student does not exist"}, status=404)
+        logger.error(f"User with id {id} not found.")
+        return Response({"error": "User not found!"}, status=404)
+    except Exception as e:
+        logger.error(f"Error deleting student and user with id {id}: {str(e)}")
+        return Response({"error": str(e)}, status=400)
 
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
@@ -178,13 +197,34 @@ def branch_list(request):
     data = [{"id": branch.id, "branch_name": branch.branch_name} for branch in branches]
     return Response(data)
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import Branches, Batch
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def batch_list(request, branch_id):
     branch = get_object_or_404(Branches, pk=branch_id)
     batches = Batch.objects.filter(branch=branch).select_related('template')
-    data = [{"id": batch.id, "template_name": batch.template.name} for batch in batches]
-    return Response({"branch": branch.branch_name, "batches": data})
+
+    batch_data = [
+        {
+            'id': batch.id,
+            'template_name': batch.template.name,
+            'branch_name': batch.branch.branch_name,
+            'timing': batch.template.timing,
+            'fee': batch.template.fee,
+            'sessions': batch.template.sessions,
+            'tennis_time': batch.template.tennis_time,
+            'fitness_time': batch.template.fitness_time,
+            'days': batch.template.days,
+        }
+        for batch in batches
+    ]
+
+    return Response({'branch': branch.branch_name, 'batches': batch_data})
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -192,7 +232,20 @@ def student_details(request, branch_id, batch_id):
     branch = get_object_or_404(Branches, pk=branch_id)
     batch = get_object_or_404(Batch, pk=batch_id)
     students = Student.objects.filter(batch=batch)
-    data = [{"id": student.id, "username": student.admin.username} for student in students]
+    data = [
+        {
+            "id": student.id,
+            "username": student.admin.username,
+            "first_name": student.admin.first_name,
+            "last_name": student.admin.last_name,
+            "email": student.admin.email,
+            "contact": student.contact,
+            "gender": student.gender,
+            "dob": student.dob,
+            "profile_pic": student.profile_pic.url if student.profile_pic else None
+        }
+        for student in students
+    ]
     return Response({"branch": branch.branch_name, "batch": batch.template.name, "students": data})
 
 @api_view(['GET'])
@@ -204,13 +257,36 @@ def manage_students(request, branch_id, batch_id):
     data = [{"id": student.id, "username": student.admin.username} for student in students]
     return Response({"branch": branch.branch_name, "batch": batch.template.name, "students": data})
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def add_student_save(request, branch_id, batch_id):
-    form = AddStudentForm(request.data, request.FILES)
+    form = AddStudentForm(request.data)
     if form.is_valid():
-        form.save()
-        return Response({"message": "Student added successfully"}, status=201)
+        # Create the CustomUser object
+        user = CustomUser.objects.create_user(
+            username=form.cleaned_data['username'],
+            email=form.cleaned_data['email'],
+            first_name=form.cleaned_data['first_name'],
+            last_name=form.cleaned_data['last_name'],
+            password=form.cleaned_data['password'],
+            user_type = 3
+        )
+        
+        # Create the Student object
+        student = Student(
+            admin=user,
+            dob=form.cleaned_data['dob'],
+            contact=form.cleaned_data['contact'],
+            gender=form.cleaned_data['gender'],
+            branch_id=branch_id,
+            batch_id=batch_id,
+            profile_pic=form.cleaned_data.get('profile_pic', None),
+            fcm_token=form.cleaned_data.get('fcm_token', ""),
+            status = 'Approved'
+        )
+        student.save()
+        return Response({"message": "Student added successfully!"}, status=200)
     else:
         return Response({"errors": form.errors}, status=400)
 
@@ -300,12 +376,29 @@ def manage_branch(request):
     data = [{"id": branch.id, "branch_name": branch.branch_name} for branch in branches]
     return Response(data)
 
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def manage_assign():
+def manage_assign(request):
     assignments = StaffBranchAssignment.objects.select_related('staff', 'branch').all()
-    data = [{"id": assignment.id, "staff": assignment.staff.admin.username, "branch": assignment.branch.branch_name} for assignment in assignments]
-    return Response(data)
+
+    # Manually create a list of assignments
+    assignment_list = [
+        {
+            'id': assignment.id,
+            'staff': {
+                'id': assignment.staff.id,
+                'name': assignment.staff.first_name,  # Replace 'name' with the correct field for staff's name
+            },
+            'branch': {
+                'id': assignment.branch.id,
+                'name': assignment.branch.branch_name,  # Replace 'name' with the correct field for branch's name
+            }
+        }
+        for assignment in assignments
+    ]
+
+    return Response(assignment_list)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -395,26 +488,37 @@ def edit_branch_save(request):
     except Exception as e:
         return Response({"error": f"Failed to Edit Branch: {str(e)}"}, status=400)
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def delete_branch(branch_id):
-    branch = get_object_or_404(Branches, id=branch_id)
-    branch.delete()
-    return Response({"message": "Successfully Deleted Branch"})
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+def delete_branch(request, branch_id):
+    try:
+        branch = Branches.objects.get(id=branch_id)
+        branch.delete()
+        return Response({'message': 'Branch deleted successfully.'}, status=status.HTTP_200_OK)
+    except Branches.DoesNotExist:
+        return Response({'error': 'Branch not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])  # Allow access without authentication
 def check_email_exist(request):
-    email = request.data.get("email")
+    email = request.data.get("email")  # Using request.data for POST in DRF
     user_exists = CustomUser.objects.filter(email=email).exists()
-    return Response({"exists": user_exists})
+
+    return Response({"exists": user_exists}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def check_username_exist(request):
-    username = request.data.get("username")
+    username = request.data.get("username")  # using request.data for API post data
     user_exists = CustomUser.objects.filter(username=username).exists()
-    return Response({"exists": user_exists})
+
+    if user_exists:
+        return Response({"exists": True}, status=status.HTTP_200_OK)
+    else:
+        return Response({"exists": False}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

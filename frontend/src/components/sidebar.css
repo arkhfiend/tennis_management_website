@@ -139,4 +139,53 @@
   html {
     scroll-behavior: smooth;
   }
-  
+  /* Styles for the main menu */
+.sidebar-links li a {
+  font-size: 18px;
+  color: #fff;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-decoration: none;
+}
+
+.sidebar-links li a:hover {
+  background-color: #f1f1f1;
+  color: #007bff;
+}
+
+/* Styles for the submenu */
+.submenu {
+  padding-left: 20px;
+}
+
+.submenu li a {
+  font-size: 15px;
+  color: #ccc;
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+}
+
+.submenu li a:hover {
+  color: #0056b3;
+}
+
+/* Visual separator for the main menu and submenu */
+.menu-separator {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 5px 0;
+}
+
+/* Sidebar header */
+.sidebar-header img {
+  width: 50px;
+}
+
+.sidebar-header h2 {
+  font-size: 24px;
+  margin: 0;
+}

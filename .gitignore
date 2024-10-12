@@ -8,6 +8,9 @@
 # Ignore the .venv file in the main folder
 .venv
 
+# Ignore the .env file in the main folder
+.env
+
 # Ignore .idea folder
 .idea/
 

@@ -188,9 +188,6 @@ const Login = () => {
         email: email,
         password: password
       });
-
-      console.log("Response from backend:", response);
-
       if (response.data.status === "success") {
         toast.success(response.data.message);
         setAuthenticated(true); // Update authenticated state
@@ -206,7 +203,7 @@ const Login = () => {
           } else {
             toast.error("Unknown user type. Please contact support.");
           }
-        }); // Delay navigation by 5 seconds
+        }); 
 
       } else {
         toast.error("Login failed. Please try again.");

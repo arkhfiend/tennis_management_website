@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion'; // For scroll animation
-import './testimonials.css';
 
 const Testimonials = () => {
   const testimonials = [
@@ -13,6 +12,21 @@ const Testimonials = () => {
       quote: "Great facilities and a supportive coaching team. Highly recommend!",
       author: "Jane Smith",
       title: "Tennis Coach",
+    },
+    {
+      quote: "The coaching at Tennis Academy is exceptional! I’ve improved my game significantly.",
+      author: "John Doe",
+      title: "AICTE Co-ordinator",
+    },
+    {
+      quote: "The coaching at Tennis Academy is exceptional! I’ve improved my game significantly.",
+      author: "John Doe",
+      title: "AICTE Co-ordinator",
+    },
+    {
+      quote: "The coaching at Tennis Academy is exceptional! I’ve improved my game significantly.",
+      author: "John Doe",
+      title: "AICTE Co-ordinator",
     },
     // Add more testimonials as needed
   ];
@@ -27,10 +41,10 @@ const Testimonials = () => {
   }, [showMore]);
 
   return (
-    <div className="testimonials-container ml-90 p-8 rounded-xl shadow-lg relative">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">What People Say</h2>
+    <div className="testimonials-container ml-24 max-w-5xl p-8 rounded-xl shadow-lg relative">
+      <h2 className="text-3xl font-bold mb-6 text-center">What People Say</h2>
       <motion.div
-        className="testimonials-content grid gap-6 md:grid-cols-2"
+        className="testimonials-content flex flex-wrap gap-6"
         ref={testimonialsContainerRef}
         initial={{ opacity: 0, y: 50 }} // Start position for scroll animation
         whileInView={{ opacity: 1, y: 0 }} // End position when in view

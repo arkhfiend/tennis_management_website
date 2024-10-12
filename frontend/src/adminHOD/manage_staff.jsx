@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import { format } from 'date-fns';
 
 const ManageStaff = () => {
   const [staffs, setStaffs] = useState([]);
@@ -27,8 +29,8 @@ const ManageStaff = () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this staff member?');
     if (confirmDelete) {
       try {
-        await axios.post(`http://localhost:8000/api/delete_staff/${id}/`);
-        setStaffs(staffs.filter(staff => staff.id !== id));
+        await axios.delete(`http://localhost:8000/api/delete_staff/${id}/`);  // Use DELETE method
+        setStaffs(staffs.filter(staff => staff.id !== id));  // Remove deleted staff from state
         toast.success('Staff deleted successfully!');
       } catch (error) {
         console.error('Error deleting staff', error);
@@ -93,22 +95,20 @@ const ManageStaff = () => {
                         <td className="border px-4 py-2">{staff.username}</td>
                         <td className="border px-4 py-2">{staff.email}</td>
                         <td className="border px-4 py-2">{staff.salary}</td>
-                        <td className="border px-4 py-2">{staff.last_login}</td>
-                        <td className="border px-4 py-2">{staff.date_joined}</td>
+                        <td className="border px-4 py-2">{format(new Date(staff.last_login), 'yyyy-MM-dd HH:mm')}</td>
+                        <td className="border px-4 py-2">{format(new Date(staff.date_joined), 'yyyy-MM-dd')}</td>
                         <td className="border px-4 py-2">
                           <div className="flex space-x-2">
-                            <button
+                            <FaEdit
                               onClick={() => navigate(`/admin/edit_staff/${staff.id}`, { state: { staff } })}
-                              className="btn btn-success"
-                            >
-                              Edit
-                            </button>
-                            <button
+                              className="text-green-500 cursor-pointer"
+                              size={20}
+                            />
+                            <FaTrash
                               onClick={() => handleDelete(staff.id)}
-                              className="btn btn-danger"
-                            >
-                              Delete
-                            </button>
+                              className="text-red-500 cursor-pointer"
+                              size={20}
+                            />
                           </div>
                         </td>
                       </tr>

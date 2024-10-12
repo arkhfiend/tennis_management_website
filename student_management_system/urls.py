@@ -37,7 +37,7 @@ path('api-auth/', include('rest_framework.urls')),
     path('api/get_students/', api_HodViews.get_student, name='get_student'),
     path('api/diet_plan_list/', api_HodViews.diet_plan_list, name='diet_plan_list'),
     #/DietPlan
-    path('api/delete_staff/<int:id>', api_HodViews.delete_staff, name='delete_staff'),
+    path('api/delete_staff/<int:id>/', api_HodViews.delete_staff, name='delete_staff'),
     path('api/delete_student/<int:id>/', api_HodViews.delete_student, name='delete_student'),
     path('api/delete_diet/<int:id>/', api_HodViews.delete_diet, name='delete_diet'),
     path('api/manage_staff', api_HodViews.manage_staff,name="manage_staff"),
